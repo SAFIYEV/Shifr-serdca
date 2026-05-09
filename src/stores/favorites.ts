@@ -57,11 +57,15 @@ export const useFavoritesStore = defineStore('favorites', () => {
     const fb = getFirebase()
     const uid = firebaseUid
     if (!fb || !uid) return
-    await setDoc(
-      doc(fb.db, 'users', uid),
-      { favorites: serializeFavorites(items.value), updatedAt: Date.now() },
-      { merge: true },
-    )
+    try {
+      await setDoc(
+        doc(fb.db, 'users', uid),
+        { favorites: serializeFavorites(items.value), updatedAt: Date.now() },
+        { merge: true },
+      )
+    } catch {
+      /* сеть / правила Firestore */
+    }
   }
 
   async function startFirebaseSync() {
@@ -74,16 +78,25 @@ export const useFavoritesStore = defineStore('favorites', () => {
     const fb = getFirebase()
     if (!fb) return
 
-    firebaseUid = await ensureAnonymousUser()
+    try {
+      firebaseUid = await ensureAnonymousUser()
+    } catch {
+      firebaseUid = null
+      return
+    }
     if (!firebaseUid) return
 
-    unsub = onSnapshot(doc(fb.db, 'users', firebaseUid), (snap) => {
-      if (!snap.exists()) return
-      const data = snap.data() as { favorites?: MarrTrack[] }
-      if (!Array.isArray(data.favorites)) return
-      items.value = data.favorites.map(ensurePlayable)
-      persistLocal()
-    })
+    try {
+      unsub = onSnapshot(doc(fb.db, 'users', firebaseUid), (snap) => {
+        if (!snap.exists()) return
+        const data = snap.data() as { favorites?: MarrTrack[] }
+        if (!Array.isArray(data.favorites)) return
+        items.value = data.favorites.map(ensurePlayable)
+        persistLocal()
+      })
+    } catch {
+      unsub = null
+    }
   }
 
   function bootstrap() {

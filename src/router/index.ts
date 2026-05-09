@@ -1,9 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-const base = import.meta.env.BASE_URL
-
+/** Hash — работает на GitHub Pages / любой вложенный URL без настройки сервера */
 const router = createRouter({
-  history: createWebHistory(base),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
     { path: '/search', name: 'search', component: () => import('@/views/SearchView.vue') },

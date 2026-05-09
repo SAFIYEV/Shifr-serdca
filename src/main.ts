@@ -6,7 +6,11 @@ import { initTelegramChrome } from './composables/useTelegram'
 import { useFavoritesStore } from './stores/favorites'
 import './styles/global.css'
 
-initTelegramChrome()
+try {
+  initTelegramChrome()
+} catch {
+  /* не блокируем монтирование */
+}
 
 const app = createApp(App)
 const pinia = createPinia()

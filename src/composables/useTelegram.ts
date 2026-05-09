@@ -2,12 +2,22 @@ import WebApp from '@twa-dev/sdk'
 import { computed } from 'vue'
 
 export function initTelegramChrome(): void {
-  WebApp.ready()
-  WebApp.expand()
+  try {
+    WebApp.ready()
+    WebApp.expand()
+  } catch {
+    /* вне Telegram или старый клиент */
+  }
   try {
     WebApp.disableVerticalSwipes?.()
   } catch {
     /* optional API */
+  }
+
+  try {
+    document.title = 'MarrFY'
+  } catch {
+    /* ignore */
   }
 
   const p = WebApp.themeParams

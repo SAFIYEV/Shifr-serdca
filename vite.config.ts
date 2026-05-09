@@ -4,7 +4,8 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const base = env.VITE_BASE_PATH || '/'
+  /** Относительный base — скрипты грузятся на GitHub Pages в подкаталоге без «чёрного экрана». Переопределение: VITE_BASE_PATH */
+  const base = env.VITE_BASE_PATH?.trim() || './'
 
   return {
     base,
