@@ -22,8 +22,9 @@ body {
     Cantarell,
     'Noto Sans',
     sans-serif;
-  background: var(--tg-theme-bg-color, var(--mf-bg));
-  color: var(--tg-theme-text-color, var(--mf-text));
+  /* SDK (@telegram-apps/sdk bindMiniAppCssVars): --tg-bg-color и др.; старые переменные темы Telegram */
+  background: var(--tg-theme-bg-color, var(--tg-bg-color, var(--mf-bg)));
+  color: var(--tg-theme-text-color, var(--tg-text-color, var(--mf-text)));
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }

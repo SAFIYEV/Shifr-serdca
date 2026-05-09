@@ -10,6 +10,7 @@
     "build:gh": "vue-tsc -b && vite build"
   },
   "dependencies": {
+    "@telegram-apps/sdk": "^3.11.8",
     "firebase": "^12.6.0",
     "howler": "^2.2.4",
     "pinia": "^3.0.4",
@@ -20,7 +21,6 @@
     "@types/howler": "^2.2.12",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/tsconfig": "^0.8.1",
-    "cross-env": "^10.1.0",
     "typescript": "~5.9.3",
     "vite": "^8.0.10",
     "vue-tsc": "^3.2.2"

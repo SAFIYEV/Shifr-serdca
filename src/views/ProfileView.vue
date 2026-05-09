@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useTelegramUser } from '@/composables/useTelegram'
 
-const { user, colorScheme, webApp } = useTelegramUser()
+const { user, colorScheme, openRepo, showWelcomePopup } = useTelegramUser()
 
 const name = computed(() => {
   const u = user.value
@@ -37,21 +37,14 @@ function openMb() {
     <section class="section">
       <div class="h">MarrFY</div>
       <p class="p">
-        Плеер на <strong>Howler.js</strong>, каталог через <strong>Audius</strong>, метаданные через
-        <strong>MusicBrainz</strong>, избранное — <strong>Firebase Firestore</strong> (опционально).
+        Telegram: <strong>@telegram-apps/sdk</strong>. Плеер — <strong>Howler.js</strong>, каталог —
+        <strong>Audius</strong>, метаданные — <strong>MusicBrainz</strong>, избранное —
+        <strong>Firebase</strong> (опционально).
       </p>
 
       <div class="actions">
-        <button
-          type="button"
-          class="btn"
-          @click="webApp?.showPopup?.({ title: 'MarrFY', message: 'Приятного прослушивания!', buttons: [{ id: 'ok', type: 'ok' }] })"
-        >
-          Тест Telegram UI
-        </button>
-        <button type="button" class="btn btn--ghost" @click="webApp?.openLink?.('https://github.com/SAFIYEV/Shifr-serdca')">
-          Репозиторий
-        </button>
+        <button type="button" class="btn" @click="showWelcomePopup">Тест Telegram UI</button>
+        <button type="button" class="btn btn--ghost" @click="openRepo">Репозиторий</button>
       </div>
     </section>
 

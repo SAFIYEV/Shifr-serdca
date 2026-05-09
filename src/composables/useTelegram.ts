@@ -1,45 +1,107 @@
+import {
+  init,
+  mountMiniAppSync,
+  bindMiniAppCssVars,
+  miniAppReady,
+  mountViewport,
+  expandViewport,
+  mountSwipeBehavior,
+  disableVerticalSwipes,
+  initDataUser,
+  isMiniAppDark,
+  showPopup,
+  openLink,
+} from '@telegram-apps/sdk'
 import { computed } from 'vue'
-import { getTelegramWebApp } from '@/lib/telegram-webapp'
 
+let initialized = false
+
+/**
+ * Инициализация Telegram Mini Apps через **@telegram-apps/sdk**
+ * (документация: https://docs.telegram-mini-apps.com/packages/telegram-apps-sdk/2-x ).
+ * Скрипт `telegram-web-app.js` подключён в index.html — SDK подписывается на события моста.
+ */
 export function initTelegramChrome(): void {
-  const tg = getTelegramWebApp()
+  if (initialized) return
+  initialized = true
+
   try {
-    tg?.ready()
-    tg?.expand()
+    init()
   } catch {
-    /* ignore */
+    return
   }
+
   try {
-    tg?.disableVerticalSwipes?.()
+    mountMiniAppSync.ifAvailable()
   } catch {
-    /* ignore */
+    /* вне Telegram / старый клиент */
+  }
+
+  try {
+    mountViewport.ifAvailable()
+  } catch {
+    /* */
+  }
+
+  try {
+    mountSwipeBehavior.ifAvailable()
+  } catch {
+    /* */
+  }
+
+  try {
+    disableVerticalSwipes.ifAvailable()
+  } catch {
+    /* */
+  }
+
+  try {
+    bindMiniAppCssVars.ifAvailable()
+  } catch {
+    /* тема через CSS variables SDK */
+  }
+
+  try {
+    miniAppReady.ifAvailable()
+  } catch {
+    /* */
+  }
+
+  try {
+    expandViewport.ifAvailable()
+  } catch {
+    /* */
   }
 
   try {
     document.title = 'MarrFY'
   } catch {
-    /* ignore */
-  }
-
-  const p = tg?.themeParams
-  if (!p) return
-  if (p.bg_color) {
-    document.documentElement.style.setProperty('--tg-theme-bg-color', p.bg_color)
-  }
-  if (p.text_color) {
-    document.documentElement.style.setProperty('--tg-theme-text-color', p.text_color)
-  }
-  if (p.hint_color) {
-    document.documentElement.style.setProperty('--tg-theme-hint-color', p.hint_color)
-  }
-  if (p.button_color) {
-    document.documentElement.style.setProperty('--tg-theme-button-color', p.button_color)
+    /* */
   }
 }
 
 export function useTelegramUser() {
-  const user = computed(() => getTelegramWebApp()?.initDataUnsafe?.user)
-  const colorScheme = computed(() => getTelegramWebApp()?.colorScheme)
-  const webApp = computed(() => getTelegramWebApp())
-  return { user, colorScheme, webApp }
+  const user = computed(() => initDataUser())
+  const colorScheme = computed(() => (isMiniAppDark() ? 'dark' : 'light'))
+
+  function openRepo() {
+    openLink.ifAvailable('https://github.com/SAFIYEV/Shifr-serdca', {})
+  }
+
+  function showWelcomePopup() {
+    showPopup.ifAvailable({
+      title: 'MarrFY',
+      message: 'Приятного прослушивания!',
+      buttons: [{ type: 'ok' }],
+    })
+  }
+
+  return {
+    user,
+    colorScheme,
+    showPopup,
+    openLink,
+    openRepo,
+    showWelcomePopup,
+  }
 }
