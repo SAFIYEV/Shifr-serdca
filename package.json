@@ -1,0 +1,29 @@
+{
+  "name": "marrfy",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "build:gh": "cross-env VITE_BASE_PATH=/Shifr-serdca/ vue-tsc -b && vite build"
+  },
+  "dependencies": {
+    "@twa-dev/sdk": "^8.0.2",
+    "firebase": "^12.6.0",
+    "howler": "^2.2.4",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@types/howler": "^2.2.12",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/tsconfig": "^0.8.1",
+    "cross-env": "^10.1.0",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.10",
+    "vue-tsc": "^3.2.2"
+  }
+}

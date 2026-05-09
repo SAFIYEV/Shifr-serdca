@@ -1,0 +1,17 @@
+:root {
+  --mf-bg: #0c0c0d;
+  --mf-bg-elevated: #1c1c1e;
+  --mf-card: #2c2c2e;
+  --mf-card-hover: #3a3a3c;
+  --mf-blue: #3390ec;
+  --mf-blue-soft: rgba(51, 144, 236, 0.18);
+  --mf-text: #ffffff;
+  --mf-muted: #98989e;
+  --mf-line: rgba(255, 255, 255, 0.09);
+  --mf-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --mf-radius: 14px;
+  --mf-radius-sm: 10px;
+  --mf-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --mf-safe-top: env(safe-area-inset-top, 0px);
+  color-scheme: dark;
+}
