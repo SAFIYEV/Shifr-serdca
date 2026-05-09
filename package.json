@@ -10,7 +10,6 @@
     "build:gh": "vue-tsc -b && vite build"
   },
   "dependencies": {
-    "@twa-dev/sdk": "^8.0.2",
     "firebase": "^12.6.0",
     "howler": "^2.2.4",
     "pinia": "^3.0.4",

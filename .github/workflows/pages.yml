@@ -28,6 +28,9 @@ jobs:
           cache: npm
 
       - name: Install and build
+        env:
+          # Совпадает с vite.config production base (путь GitHub Pages project site)
+          VITE_BASE_PATH: /Shifr-serdca/
         run: |
           npm ci
           npm run build

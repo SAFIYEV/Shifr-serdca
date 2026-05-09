@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-/** Hash — работает на GitHub Pages / любой вложенный URL без настройки сервера */
+/** Hash + base из Vite — корректный путь под GitHub Pages */
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', name: 'home', component: () => import('@/views/HomeView.vue') },
     { path: '/search', name: 'search', component: () => import('@/views/SearchView.vue') },

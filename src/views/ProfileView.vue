@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import WebApp from '@twa-dev/sdk'
 import { useTelegramUser } from '@/composables/useTelegram'
 
-const { user, colorScheme } = useTelegramUser()
+const { user, colorScheme, webApp } = useTelegramUser()
 
 const name = computed(() => {
   const u = user.value
@@ -43,10 +42,14 @@ function openMb() {
       </p>
 
       <div class="actions">
-        <button type="button" class="btn" @click="WebApp.showPopup?.({ title: 'MarrFY', message: 'Приятного прослушивания!', buttons: [{ id: 'ok', type: 'ok' }] })">
+        <button
+          type="button"
+          class="btn"
+          @click="webApp?.showPopup?.({ title: 'MarrFY', message: 'Приятного прослушивания!', buttons: [{ id: 'ok', type: 'ok' }] })"
+        >
           Тест Telegram UI
         </button>
-        <button type="button" class="btn btn--ghost" @click="WebApp.openLink?.('https://github.com/SAFIYEV/Shifr-serdca')">
+        <button type="button" class="btn btn--ghost" @click="webApp?.openLink?.('https://github.com/SAFIYEV/Shifr-serdca')">
           Репозиторий
         </button>
       </div>

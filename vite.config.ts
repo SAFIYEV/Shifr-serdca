@@ -4,8 +4,13 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  /** Относительный base — скрипты грузятся на GitHub Pages в подкаталоге без «чёрного экрана». Переопределение: VITE_BASE_PATH */
-  const base = env.VITE_BASE_PATH?.trim() || './'
+  /**
+   * GitHub Pages project site: без завершающего `/` в URL относительные `./assets/` резолвятся в корень домена
+   * (`github.io/assets/…`) — скрипты не грузятся. Абсолютный `/ИмяРепо/` работает всегда.
+   * Локально: `/`. Переопределение: VITE_BASE_PATH.
+   */
+  const base =
+    env.VITE_BASE_PATH?.trim() || (mode === 'production' ? '/Shifr-serdca/' : '/')
 
   return {
     base,

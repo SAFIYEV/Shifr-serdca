@@ -1,17 +1,18 @@
-import WebApp from '@twa-dev/sdk'
 import { computed } from 'vue'
+import { getTelegramWebApp } from '@/lib/telegram-webapp'
 
 export function initTelegramChrome(): void {
+  const tg = getTelegramWebApp()
   try {
-    WebApp.ready()
-    WebApp.expand()
+    tg?.ready()
+    tg?.expand()
   } catch {
-    /* вне Telegram или старый клиент */
+    /* ignore */
   }
   try {
-    WebApp.disableVerticalSwipes?.()
+    tg?.disableVerticalSwipes?.()
   } catch {
-    /* optional API */
+    /* ignore */
   }
 
   try {
@@ -20,7 +21,8 @@ export function initTelegramChrome(): void {
     /* ignore */
   }
 
-  const p = WebApp.themeParams
+  const p = tg?.themeParams
+  if (!p) return
   if (p.bg_color) {
     document.documentElement.style.setProperty('--tg-theme-bg-color', p.bg_color)
   }
@@ -36,7 +38,8 @@ export function initTelegramChrome(): void {
 }
 
 export function useTelegramUser() {
-  const user = computed(() => WebApp.initDataUnsafe?.user)
-  const colorScheme = computed(() => WebApp.colorScheme)
-  return { WebApp, user, colorScheme }
+  const user = computed(() => getTelegramWebApp()?.initDataUnsafe?.user)
+  const colorScheme = computed(() => getTelegramWebApp()?.colorScheme)
+  const webApp = computed(() => getTelegramWebApp())
+  return { user, colorScheme, webApp }
 }
