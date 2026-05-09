@@ -1,4 +1,5 @@
 import {
+  applyPolyfills,
   init,
   mountMiniAppSync,
   bindMiniAppCssVars,
@@ -12,18 +13,22 @@ import {
   showPopup,
   openLink,
 } from '@telegram-apps/sdk'
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-let initialized = false
+let bridgeReady = false
 
 /**
- * Инициализация Telegram Mini Apps через **@telegram-apps/sdk**
- * (документация: https://docs.telegram-mini-apps.com/packages/telegram-apps-sdk/2-x ).
- * Скрипт `telegram-web-app.js` подключён в index.html — SDK подписывается на события моста.
+ * Ранняя инициализация моста Telegram (до монтирования Vue).
+ * `miniAppReady` вызывается отдельно после mount — чтобы Telegram убрал заглушку, когда интерфейс уже отрисован.
  */
-export function initTelegramChrome(): void {
-  if (initialized) return
-  initialized = true
+export function initTelegramBridge(): void {
+  if (bridgeReady) return
+
+  try {
+    applyPolyfills()
+  } catch {
+    /* старые WebView */
+  }
 
   try {
     init()
@@ -31,10 +36,12 @@ export function initTelegramChrome(): void {
     return
   }
 
+  bridgeReady = true
+
   try {
     mountMiniAppSync.ifAvailable()
   } catch {
-    /* вне Telegram / старый клиент */
+    /* вне Telegram */
   }
 
   try {
@@ -58,12 +65,6 @@ export function initTelegramChrome(): void {
   try {
     bindMiniAppCssVars.ifAvailable()
   } catch {
-    /* тема через CSS variables SDK */
-  }
-
-  try {
-    miniAppReady.ifAvailable()
-  } catch {
     /* */
   }
 
@@ -80,9 +81,25 @@ export function initTelegramChrome(): void {
   }
 }
 
+/** Сообщить клиенту Telegram, что Mini App можно показывать (после первого кадра Vue). */
+export function signalTelegramAppReady(): void {
+  try {
+    miniAppReady.ifAvailable()
+  } catch {
+    /* */
+  }
+}
+
 export function useTelegramUser() {
-  const user = computed(() => initDataUser())
-  const colorScheme = computed(() => (isMiniAppDark() ? 'dark' : 'light'))
+  const user = ref(initDataUser())
+  const colorScheme = ref<'light' | 'dark'>(isMiniAppDark() ? 'dark' : 'light')
+
+  onMounted(() => {
+    user.value = initDataUser()
+    colorScheme.value = isMiniAppDark() ? 'dark' : 'light'
+  })
+
+  const userDisplay = computed(() => user.value)
 
   function openRepo() {
     openLink.ifAvailable('https://github.com/SAFIYEV/Shifr-serdca', {})
@@ -97,7 +114,7 @@ export function useTelegramUser() {
   }
 
   return {
-    user,
+    user: userDisplay,
     colorScheme,
     showPopup,
     openLink,

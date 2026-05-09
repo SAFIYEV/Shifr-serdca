@@ -65,6 +65,9 @@ export const usePlayerStore = defineStore('player', () => {
       html5: true,
       format: ['mp3', 'mpeg', 'opus'],
       volume: 0.92,
+      onload: () => {
+        progressSec.value = 0
+      },
       onloaderror: () => {
         playing.value = false
       },

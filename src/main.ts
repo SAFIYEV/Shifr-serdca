@@ -2,14 +2,14 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
-import { initTelegramChrome } from './composables/useTelegram'
+import { initTelegramBridge, signalTelegramAppReady } from './composables/useTelegram'
 import { useFavoritesStore } from './stores/favorites'
 import './styles/global.css'
 
 try {
-  initTelegramChrome()
+  initTelegramBridge()
 } catch {
-  /* не блокируем монтирование */
+  /* не блокируем приложение вне Telegram */
 }
 
 const app = createApp(App)
@@ -21,3 +21,7 @@ const fav = useFavoritesStore(pinia)
 fav.bootstrap()
 
 app.mount('#app')
+
+requestAnimationFrame(() => {
+  signalTelegramAppReady()
+})

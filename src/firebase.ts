@@ -7,8 +7,8 @@ let db: Firestore | null = null
 let auth: Auth | null = null
 
 export function getFirebase(): { app: FirebaseApp; db: Firestore; auth: Auth } | null {
-  const key = import.meta.env.VITE_FIREBASE_API_KEY
-  const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID
+  const key = import.meta.env.VITE_FIREBASE_API_KEY?.trim()
+  const pid = import.meta.env.VITE_FIREBASE_PROJECT_ID?.trim()
   if (!key || !pid) return null
 
   if (!app) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onUnmounted, ref, watch } from 'vue'
 import { searchTracks } from '@/services/audius'
 import { searchRecordings } from '@/services/musicbrainz'
 import type { MarrTrack, MbRecordingHit } from '@/types/track'
@@ -20,6 +20,10 @@ let timer: number | undefined
 watch(q, () => {
   window.clearTimeout(timer)
   timer = window.setTimeout(() => void run(), 280)
+})
+
+onUnmounted(() => {
+  window.clearTimeout(timer)
 })
 
 async function run() {
