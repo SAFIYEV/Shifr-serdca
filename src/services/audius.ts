@@ -45,10 +45,13 @@ export async function fetchTrending(limit = 24): Promise<MarrTrack[]> {
   return rows.map(mapAudiusTrack)
 }
 
-export async function searchTracks(query: string, limit = 25): Promise<MarrTrack[]> {
+/** Поиск треков; limit до ~100, offset для подгрузки страниц */
+export async function searchTracks(query: string, limit = 40, offset = 0): Promise<MarrTrack[]> {
   const q = query.trim()
   if (!q) return []
-  const url = `${API}/tracks/search?query=${encodeURIComponent(q)}&limit=${limit}&app_name=${encodeURIComponent(APP_NAME)}`
+  const lim = Math.min(Math.max(1, limit), 100)
+  const off = Math.max(0, offset)
+  const url = `${API}/tracks/search?query=${encodeURIComponent(q)}&limit=${lim}&offset=${off}&app_name=${encodeURIComponent(APP_NAME)}`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Audius search: ${res.status}`)
   const json = (await res.json()) as { data?: Record<string, unknown>[] }
