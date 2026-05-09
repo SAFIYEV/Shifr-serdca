@@ -1,3 +1,6 @@
+# Публикация в ветку gh-pages (не требует режима «GitHub Actions» в Settings → Pages).
+# После первого успешного прогона: Settings → Pages → Source: Deploy from a branch → gh-pages / (root)
+
 name: Deploy GitHub Pages
 
 on:
@@ -5,19 +8,14 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,15 +27,13 @@ jobs:
 
       - name: Install and build
         env:
-          # Совпадает с vite.config production base (путь GitHub Pages project site)
           VITE_BASE_PATH: /Shifr-serdca/
         run: |
           npm ci
           npm run build
 
-      - uses: actions/upload-pages-artifact@v3
+      - name: Push dist to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: dist
-
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
