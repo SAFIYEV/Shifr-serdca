@@ -4,7 +4,6 @@ export interface MarrTrack {
   artistName: string
   artworkUrl: string
   durationSec: number
-  /** Audius discovery stream URL */
   streamUrl: string
   genre?: string
 }

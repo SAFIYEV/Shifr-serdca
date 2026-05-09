@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { Howl } from 'howler'
 import { computed, ref } from 'vue'
 import type { MarrTrack } from '@/types/track'
+import { useListeningStatsStore } from '@/stores/listeningStats'
 
 export const usePlayerStore = defineStore('player', () => {
   const queue = ref<MarrTrack[]>([])
@@ -10,6 +11,7 @@ export const usePlayerStore = defineStore('player', () => {
   const progressSec = ref(0)
   let howl: Howl | null = null
   let raf = 0
+  let lastListenTs = 0
 
   const current = computed(() => queue.value[index.value] ?? null)
 
@@ -28,13 +30,22 @@ export const usePlayerStore = defineStore('player', () => {
 
   function tick() {
     if (howl?.playing()) {
+      const now = performance.now()
+      if (lastListenTs > 0) {
+        const dt = (now - lastListenTs) / 1000
+        if (dt > 0 && dt < 3) useListeningStatsStore().addSeconds(dt)
+      }
+      lastListenTs = now
       progressSec.value = Number(howl.seek())
       raf = requestAnimationFrame(tick)
+    } else {
+      lastListenTs = 0
     }
   }
 
   function unloadAudio() {
     stopRaf()
+    lastListenTs = 0
     howl?.unload()
     howl = null
   }
@@ -73,6 +84,7 @@ export const usePlayerStore = defineStore('player', () => {
       },
       onplay: () => {
         playing.value = true
+        lastListenTs = performance.now()
         tick()
       },
       onpause: () => {

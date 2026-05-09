@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePlayerStore } from '@/stores/player'
+import { useFavoritesStore } from '@/stores/favorites'
 
 const player = usePlayerStore()
+const fav = useFavoritesStore()
 
 const pct = computed(() => {
   const d = player.durationSec
@@ -23,6 +25,13 @@ function fmt(sec: number) {
   const s = Math.floor(sec % 60)
   return `${m}:${s.toString().padStart(2, '0')}`
 }
+
+function toggleLike() {
+  const t = player.current
+  if (t) void fav.toggleFavorite(t)
+}
+
+const liked = computed(() => (player.current ? fav.isFavorite(player.current) : false))
 </script>
 
 <template>
@@ -50,6 +59,29 @@ function fmt(sec: number) {
           <span>{{ fmt(player.durationSec) }}</span>
         </div>
       </div>
+
+      <button
+        type="button"
+        class="like"
+        :class="{ 'like--on': liked }"
+        aria-label="В избранное"
+        @click="toggleLike"
+      >
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path
+            v-if="liked"
+            fill="currentColor"
+            d="M12 21s-6.7-4.35-9.3-8.2C.8 10.3 1.6 7.1 4.2 5.6 6.1 4.4 8.5 5 10 6.7c1.5-1.7 3.9-2.3 5.8-1.1 2.6 1.5 3.4 4.7 1.5 7.2C15 16.65 12 21 12 21z"
+          />
+          <path
+            v-else
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            d="M12 21s-6.7-4.35-9.3-8.2C.8 10.3 1.6 7.1 4.2 5.6 6.1 4.4 8.5 5 10 6.7c1.5-1.7 3.9-2.3 5.8-1.1 2.6 1.5 3.4 4.7 1.5 7.2C15 16.65 12 21 12 21z"
+          />
+        </svg>
+      </button>
 
       <button type="button" class="play" @click="player.toggle()" :aria-label="player.playing ? 'Пауза' : 'Играть'">
         <svg v-if="!player.playing" viewBox="0 0 24 24" width="26" height="26">
@@ -83,10 +115,10 @@ function fmt(sec: number) {
 .player {
   pointer-events: auto;
   display: grid;
-  grid-template-columns: 44px 1fr 52px 44px;
-  gap: 8px;
+  grid-template-columns: 40px 1fr 44px 48px 40px;
+  gap: 6px;
   align-items: center;
-  padding: 10px 10px;
+  padding: 10px 8px;
   border-radius: 16px;
   border: 1px solid var(--mf-line);
   box-shadow: var(--mf-shadow);
@@ -105,6 +137,27 @@ function fmt(sec: number) {
 
 .side:active {
   transform: scale(0.98);
+}
+
+.like {
+  border: 0;
+  height: 48px;
+  width: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--mf-muted);
+}
+
+.like--on {
+  color: #ff4d6d;
+  background: rgba(255, 77, 109, 0.14);
+}
+
+.like:active {
+  transform: scale(0.97);
 }
 
 .meta {

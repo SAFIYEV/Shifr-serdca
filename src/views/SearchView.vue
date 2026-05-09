@@ -62,13 +62,12 @@ function play(t: MarrTrack) {
         <input v-model="q" class="input" type="search" enterkeyhint="search" placeholder="Трек, артист, настроение…" />
       </label>
       <div class="micro">
-        Audius • MusicBrainz
-        <span v-if="loading" class="dot">• ищем</span>
+        <span v-if="loading" class="dot">Ищем…</span>
       </div>
     </header>
 
     <section v-if="mb.length" class="block">
-      <div class="h">MusicBrainz</div>
+      <div class="h">Похожие записи</div>
       <div class="mb">
         <a
           v-for="r in mb"
@@ -85,10 +84,7 @@ function play(t: MarrTrack) {
     </section>
 
     <section class="block">
-      <div class="h">
-        Результаты
-        <span class="hint">Audius</span>
-      </div>
+      <div class="h">Треки</div>
       <div v-if="!q.trim()" class="empty">Начните вводить запрос — покажем релевантные треки.</div>
       <div v-else-if="loading && !audius.length" class="empty">Ищем…</div>
       <div v-else-if="!audius.length" class="empty">Ничего не нашли. Попробуйте другую формулировку.</div>

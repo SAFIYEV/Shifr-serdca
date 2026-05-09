@@ -16,9 +16,7 @@ function play(t: MarrTrack) {
   <div class="page">
     <header class="top mf-glass">
       <div class="title">Медиатека</div>
-      <div class="sub">
-        Избранное хранится локально и при наличии Firebase — в облаке (анонимный вход в Firebase Auth).
-      </div>
+      <div class="sub">Ваши сохранённые треки</div>
     </header>
 
     <section class="block">
@@ -27,7 +25,7 @@ function play(t: MarrTrack) {
         <span class="hint">{{ fav.items.length }}</span>
       </div>
 
-      <div v-if="!fav.items.length" class="empty">Добавляйте сердечком — соберём коллекцию MarrFY.</div>
+      <div v-if="!fav.items.length" class="empty">Отметьте трек сердечком в списке или в плеере — он появится здесь.</div>
 
       <div v-else class="list">
         <TrackRow

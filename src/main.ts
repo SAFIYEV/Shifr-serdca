@@ -4,6 +4,7 @@ import App from './App.vue'
 import router from './router'
 import { initTelegramBridge, signalTelegramAppReady } from './composables/useTelegram'
 import { useFavoritesStore } from './stores/favorites'
+import { useListeningStatsStore } from './stores/listeningStats'
 import './styles/global.css'
 
 try {
@@ -19,6 +20,7 @@ app.use(router)
 
 const fav = useFavoritesStore(pinia)
 fav.bootstrap()
+useListeningStatsStore(pinia)
 
 app.mount('#app')
 

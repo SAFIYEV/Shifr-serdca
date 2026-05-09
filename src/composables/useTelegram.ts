@@ -10,8 +10,7 @@ import {
   disableVerticalSwipes,
   initDataUser,
   isMiniAppDark,
-  showPopup,
-  openLink,
+  restoreInitData,
 } from '@telegram-apps/sdk'
 import { computed, onMounted, ref } from 'vue'
 
@@ -42,6 +41,12 @@ export function initTelegramBridge(): void {
     mountMiniAppSync.ifAvailable()
   } catch {
     /* вне Telegram */
+  }
+
+  try {
+    restoreInitData()
+  } catch {
+    /* */
   }
 
   try {
@@ -95,30 +100,19 @@ export function useTelegramUser() {
   const colorScheme = ref<'light' | 'dark'>(isMiniAppDark() ? 'dark' : 'light')
 
   onMounted(() => {
+    try {
+      restoreInitData()
+    } catch {
+      /* */
+    }
     user.value = initDataUser()
     colorScheme.value = isMiniAppDark() ? 'dark' : 'light'
   })
 
   const userDisplay = computed(() => user.value)
 
-  function openRepo() {
-    openLink.ifAvailable('https://github.com/SAFIYEV/Shifr-serdca', {})
-  }
-
-  function showWelcomePopup() {
-    showPopup.ifAvailable({
-      title: 'MarrFY',
-      message: 'Приятного прослушивания!',
-      buttons: [{ type: 'ok' }],
-    })
-  }
-
   return {
     user: userDisplay,
     colorScheme,
-    showPopup,
-    openLink,
-    openRepo,
-    showWelcomePopup,
   }
 }

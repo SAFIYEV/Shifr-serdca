@@ -39,7 +39,7 @@ const activeChip = ref('Неделя')
     <header class="hero mf-glass">
       <div class="brand">
         <div class="logo">MarrFY</div>
-        <div class="sub">Музыка в стиле Telegram • Audius</div>
+        <div class="sub">Подборки и треки недели</div>
       </div>
       <div class="chips" role="tablist" aria-label="Категории">
         <button
@@ -58,7 +58,6 @@ const activeChip = ref('Неделя')
     <section class="section">
       <div class="h2">
         <span>В тренде</span>
-        <span class="hint">Audius</span>
       </div>
 
       <div v-if="loading" class="state">Загружаем волну…</div>
@@ -148,18 +147,9 @@ const activeChip = ref('Неделя')
 }
 
 .h2 {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
   padding: 6px 4px 12px;
   font-weight: 900;
   font-size: 18px;
-}
-
-.hint {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--mf-muted);
 }
 
 .list {

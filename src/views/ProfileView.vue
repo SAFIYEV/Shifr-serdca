@@ -1,58 +1,61 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useTelegramUser } from '@/composables/useTelegram'
+import { useFavoritesStore } from '@/stores/favorites'
+import { useListeningStatsStore } from '@/stores/listeningStats'
 
-const { user, colorScheme, openRepo, showWelcomePopup } = useTelegramUser()
+const { user } = useTelegramUser()
+const fav = useFavoritesStore()
+const listen = useListeningStatsStore()
 
-const name = computed(() => {
+const displayName = computed(() => {
   const u = user.value
   if (!u) return 'Гость'
-  return [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username || 'Telegram'
+  const parts = [u.first_name, u.last_name].filter(Boolean)
+  if (parts.length) return parts.join(' ')
+  if (u.username) return `@${u.username}`
+  return 'Пользователь Telegram'
 })
 
-function openAudius() {
-  window.open('https://audius.co', '_blank', 'noopener,noreferrer')
-}
+const avatarLetter = computed(() => displayName.value.slice(0, 1).toUpperCase())
 
-function openMb() {
-  window.open('https://musicbrainz.org', '_blank', 'noopener,noreferrer')
-}
+const avatarUrl = computed(() => user.value?.photo_url ?? '')
+
+const listenedPretty = computed(() => {
+  const t = Math.floor(listen.totalListenedSec)
+  const h = Math.floor(t / 3600)
+  const m = Math.floor((t % 3600) / 60)
+  if (h > 0) return `${h} ч ${m} мин`
+  if (m > 0) return `${m} мин`
+  const s = t % 60
+  return `${s} сек`
+})
 </script>
 
 <template>
   <div class="page">
-    <header class="card mf-glass">
-      <div class="avatar" aria-hidden="true">
-        {{ name.slice(0, 1).toUpperCase() }}
+    <header class="hero mf-glass">
+      <div class="avatar-wrap">
+        <img v-if="avatarUrl" class="avatar avatar--img" :src="avatarUrl" alt="" />
+        <div v-else class="avatar">{{ avatarLetter }}</div>
       </div>
-      <div class="meta">
-        <div class="t1">{{ name }}</div>
-        <div class="t2">
-          Telegram Mini App • {{ colorScheme }}
-          <span v-if="user?.username"> • @{{ user.username }}</span>
-        </div>
+
+      <div class="who">
+        <h1 class="name">{{ displayName }}</h1>
+        <p v-if="user?.username" class="username">@{{ user.username }}</p>
+        <p v-else-if="user" class="muted">Имя пользователя скрыто</p>
+        <p v-else class="muted">Откройте приложение из Telegram, чтобы подтянуть профиль</p>
       </div>
     </header>
 
-    <section class="section">
-      <div class="h">MarrFY</div>
-      <p class="p">
-        Telegram: <strong>@telegram-apps/sdk</strong>. Плеер — <strong>Howler.js</strong>, каталог —
-        <strong>Audius</strong>, метаданные — <strong>MusicBrainz</strong>, избранное —
-        <strong>Firebase</strong> (опционально).
-      </p>
-
-      <div class="actions">
-        <button type="button" class="btn" @click="showWelcomePopup">Тест Telegram UI</button>
-        <button type="button" class="btn btn--ghost" @click="openRepo">Репозиторий</button>
+    <section class="stats">
+      <div class="stat mf-glass">
+        <div class="stat__val">{{ listenedPretty }}</div>
+        <div class="stat__lbl">Прослушано</div>
       </div>
-    </section>
-
-    <section class="section">
-      <div class="h">Источники</div>
-      <div class="links">
-        <button type="button" class="link" @click="openAudius">Audius</button>
-        <button type="button" class="link" @click="openMb">MusicBrainz</button>
+      <div class="stat mf-glass">
+        <div class="stat__val">{{ fav.items.length }}</div>
+        <div class="stat__lbl">В избранном</div>
       </div>
     </section>
   </div>
@@ -60,107 +63,95 @@ function openMb() {
 
 <style scoped>
 .page {
-  padding: calc(12px + var(--mf-safe-top)) 14px 18px;
+  padding: calc(12px + var(--mf-safe-top)) 14px 24px;
   max-width: 760px;
   margin: 0 auto;
 }
 
-.card {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  gap: 12px;
+.hero {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 14px;
-  border-radius: 18px;
+  text-align: center;
+  padding: 22px 18px 20px;
+  border-radius: 20px;
   border: 1px solid var(--mf-line);
   box-shadow: var(--mf-shadow);
 }
 
+.avatar-wrap {
+  margin-bottom: 14px;
+}
+
 .avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
   display: grid;
   place-items: center;
-  font-weight: 950;
-  font-size: 22px;
+  font-weight: 900;
+  font-size: 36px;
   background: radial-gradient(circle at 30% 25%, #7aaefc, #3390ec 55%, #175fb8);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px rgba(51, 144, 236, 0.25);
 }
 
-.meta {
+.avatar--img {
+  object-fit: cover;
+  padding: 0;
+}
+
+.who {
   min-width: 0;
+  width: 100%;
 }
 
-.t1 {
-  font-weight: 950;
-  font-size: 18px;
+.name {
+  margin: 0;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.username {
+  margin: 8px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--mf-blue);
+}
+
+.muted {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--mf-muted);
+  line-height: 1.4;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.stat {
+  padding: 16px 14px;
+  border-radius: 16px;
+  border: 1px solid var(--mf-line);
+  text-align: center;
+}
+
+.stat__val {
+  font-weight: 900;
+  font-size: 20px;
   letter-spacing: -0.02em;
 }
 
-.t2 {
+.stat__lbl {
   margin-top: 6px;
   font-size: 12px;
+  font-weight: 650;
   color: var(--mf-muted);
-  line-height: 1.35;
-}
-
-.section {
-  margin-top: 16px;
-  border: 1px solid var(--mf-line);
-  border-radius: 18px;
-  padding: 14px;
-  background: rgba(44, 44, 46, 0.22);
-}
-
-.h {
-  font-weight: 950;
-  font-size: 15px;
-  margin-bottom: 10px;
-}
-
-.p {
-  margin: 0;
-  color: var(--mf-muted);
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.actions {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  border: 1px solid rgba(51, 144, 236, 0.35);
-  background: var(--mf-blue-soft);
-  color: var(--mf-text);
-  padding: 10px 12px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 750;
-}
-
-.btn--ghost {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--mf-line);
-}
-
-.links {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.link {
-  border: 1px solid var(--mf-line);
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--mf-blue);
-  padding: 10px 12px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 800;
 }
 </style>
